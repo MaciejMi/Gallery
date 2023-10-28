@@ -4,12 +4,24 @@
  */
 package gallery;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+
 /**
  *
  * @author macie
  */
 public class Gallery extends javax.swing.JFrame {
 
+    public File[] listOfImages = {};
+    public int actualIndex = 0;
     /**
      * Creates new form Gallery
      */
@@ -26,21 +38,132 @@ public class Gallery extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gallery");
+        setSize(new java.awt.Dimension(600, 600));
+
+        jButton1.setText("Choose Catalog");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("<");
+        jButton2.setToolTipText("");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText(">");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(117, 117, 117)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton3)
+                .addContainerGap(99, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 331, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2)
+                    .addComponent(jButton3))
+                .addGap(12, 12, 12))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private static File[] push(File[] array, File push) {
+        File[] longer = new File[array.length + 1];
+        System.arraycopy(array, 0, longer, 0, array.length);
+        longer[array.length] = push;
+        return longer;
+    }
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.showOpenDialog(null);
+        File[] listOfFiles;
+        if (fileChooser.getSelectedFile() != null){
+            String directory = fileChooser.getSelectedFile().getAbsolutePath();
+            listOfFiles = new File(directory).listFiles();
+            String[] allowFormats = {"jpg", "png", "jpeg","bmp", "wbmp", "gif"};
+            for (File file : listOfFiles){
+                String str = file.getName();
+                
+                for (int i = 0; i < allowFormats.length; i++){
+                    if (str.substring(str.lastIndexOf(".") + 1).contains(allowFormats[i])){
+                        listOfImages = push(listOfImages, file);
+                    }
+                }
+                
+            }
+            
+            BufferedImage img;
+            try {
+                img = ImageIO.read(listOfFiles[this.actualIndex]);
+                jLabel1.setIcon(new ImageIcon(img.getScaledInstance(500,500, Image.SCALE_DEFAULT )));
+            } catch (IOException ex) {
+                Logger.getLogger(Gallery.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if (this.actualIndex <= 0){
+            this.actualIndex = 0;
+        }else{
+            this.actualIndex -= 1;
+        }
+        BufferedImage img;
+        try {
+            img = ImageIO.read(listOfImages[this.actualIndex]);
+            jLabel1.setIcon(new ImageIcon(img.getScaledInstance(500,500, Image.SCALE_DEFAULT )));
+        } catch (IOException ex) {
+            Logger.getLogger(Gallery.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+          if (this.actualIndex >= this.listOfImages.length-1){
+            this.actualIndex = this.listOfImages.length-1;
+        }else{
+            this.actualIndex += 1;
+        }
+        BufferedImage img;
+        try {
+            img = ImageIO.read(listOfImages[this.actualIndex]);
+            jLabel1.setIcon(new ImageIcon(img.getScaledInstance(500,500, Image.SCALE_DEFAULT )));
+        } catch (IOException ex) {
+            Logger.getLogger(Gallery.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -78,5 +201,9 @@ public class Gallery extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
